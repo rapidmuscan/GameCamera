@@ -20,15 +20,14 @@ public class CamerController : MonoBehaviour
     public float minX, maxX;
     public float minZ, MaxZ;
 
-    void Start()
+    private void Start()
     {
         newPosition = transform.position;
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         HandleMouseInut();
         HandleMovementInput();
@@ -85,15 +84,6 @@ public class CamerController : MonoBehaviour
         {
             if(newPosition.x < maxX)
             newPosition += (transform.right * movementSpeed);
-        }
-
-        if (Input.GetKey(KeyCode.R) && newZoom.y > minZoom.y && newZoom.z < minZoom.z)
-        {
-            newZoom += zoomAmount;
-        }
-        if (Input.GetKey(KeyCode.F) && newZoom.y < maxZoom.y && newZoom.z > maxZoom.z)
-        {
-            newZoom -= zoomAmount;
         }
 
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
