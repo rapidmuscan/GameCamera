@@ -29,6 +29,7 @@ public class CamerController : MonoBehaviour
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;
         newPosition.y = HeightPosRIG;
+        AngleCamChange();
     }
 
     private void Update()
@@ -38,22 +39,21 @@ public class CamerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        float AngleNeeded = MinCamAngle + ((Vector3.Distance(newZoom, minZoom) / Vector3.Distance(minZoom, maxZoom)) * (MaxCamAngle-MinCamAngle));
-        newRotation = Quaternion.Euler(AngleNeeded, 0, 0);
     }
+    
     private void HandleMouseInut()
     {
         if (Input.mouseScrollDelta.y < 0 && newZoom.y < maxZoom.y && newZoom.z > maxZoom.z)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmount;
+            AngleCamChange();
         }
         if (Input.mouseScrollDelta.y > 0 && newZoom.y > minZoom.y && newZoom.z < minZoom.z)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmount;
+            AngleCamChange();
         }
     }
-
-
     private void HandleMovementInput()
     {
         if (Input.GetKey(KeyCode.LeftShift))
@@ -84,5 +84,10 @@ public class CamerController : MonoBehaviour
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
         transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
         transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, Time.deltaTime * movementTime);
+    }
+    private void AngleCamChange()
+    {
+        float AngleNeeded = MinCamAngle + ((Vector3.Distance(newZoom, minZoom) / Vector3.Distance(minZoom, maxZoom)) * (MaxCamAngle - MinCamAngle));
+        newRotation = Quaternion.Euler(AngleNeeded, 0, 0);
     }
 }
