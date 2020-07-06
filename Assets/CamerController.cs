@@ -19,12 +19,16 @@ public class CamerController : MonoBehaviour
     public float rotationAmount;
     public float minX, maxX;
     public float minZ, MaxZ;
+    public float HeightPosRIG;
+    public float MinCamAngle = 30;
+    public float MaxCamAngle = 90;
 
     private void Start()
     {
         newPosition = transform.position;
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;
+        newPosition.y = HeightPosRIG;
     }
 
     private void Update()
@@ -32,25 +36,20 @@ public class CamerController : MonoBehaviour
         HandleMouseInut();
         HandleMovementInput();
     }
-
+    private void FixedUpdate()
+    {
+        float AngleNeeded = MinCamAngle + ((Vector3.Distance(newZoom, minZoom) / Vector3.Distance(minZoom, maxZoom)) * (MaxCamAngle-MinCamAngle));
+        newRotation = Quaternion.Euler(AngleNeeded, 0, 0);
+    }
     private void HandleMouseInut()
     {
-
         if (Input.mouseScrollDelta.y < 0 && newZoom.y < maxZoom.y && newZoom.z > maxZoom.z)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmount;
-
-
-            newRotation.x = -0.25f + (Vector3.Distance(newZoom, minZoom) / Vector3.Distance(minZoom, maxZoom)) * 0.40f;
-
-            print(newRotation.x);
         }
         if (Input.mouseScrollDelta.y > 0 && newZoom.y > minZoom.y && newZoom.z < minZoom.z)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmount;
-
-            newRotation.x = -0.25f + (Vector3.Distance(newZoom, minZoom)/Vector3.Distance(minZoom, maxZoom))*0.40f;
-            print(newRotation.x);
         }
     }
 
@@ -65,25 +64,21 @@ public class CamerController : MonoBehaviour
         {
             movementSpeed = normalSpeed;
         }
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+        if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))&&newPosition.z < MaxZ)
         {
-            if(newPosition.z < MaxZ)
-            newPosition += (transform.forward * movementSpeed);
+                newPosition.z += movementSpeed;
         }
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+        if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))&& newPosition.z > minZ)
         {
-            if(newPosition.z >minZ)
-            newPosition += (transform.forward * -movementSpeed);
+                newPosition.z += -movementSpeed;
         }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))&& newPosition.x > minX)
         {
-            if(newPosition.x > minX)
-            newPosition += (transform.right * -movementSpeed);
+                newPosition.x += -movementSpeed;
         }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))&& newPosition.x < maxX)
         {
-            if(newPosition.x < maxX)
-            newPosition += (transform.right * movementSpeed);
+                newPosition.x += movementSpeed;
         }
 
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
